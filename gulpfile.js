@@ -40,7 +40,7 @@ var AUTOPREFIXER_BROWSERS = [
 ];
 
 // Lint JavaScript
-gulp.task('jshint', function () {
+gulp.task('jshint', function() {
   return gulp.src('app/scripts/**/*.js')
     .pipe(reload({stream: true, once: true}))
     .pipe($.jshint())
@@ -49,7 +49,7 @@ gulp.task('jshint', function () {
 });
 
 // Optimize Images
-gulp.task('images', function () {
+gulp.task('images', function() {
   return gulp.src('app/images/**/*')
     .pipe($.cache($.imagemin({
       progressive: true,
@@ -59,7 +59,7 @@ gulp.task('images', function () {
 });
 
 // Copy All Files At The Root Level (app)
-gulp.task('copy', function () {
+gulp.task('copy', function() {
   return gulp.src([
     'app/*',
     '!app/*.html'
@@ -68,8 +68,17 @@ gulp.task('copy', function () {
   }).pipe(gulp.dest('dist'));
 });
 
+gulp.task('copy:dependencies', function() {
+  return gulp.src([
+    'node_modules/shower-core/shower.min.js'
+  ], {
+    dot: true
+  }).pipe(gulp.dest('dist/shower-core'))
+  .pipe(gulp.dest('.tmp/shower-core'));
+});
+
 // Compile and Automatically Prefix Stylesheets
-gulp.task('styles', function () {
+gulp.task('styles', function() {
   // For best performance, don't add Sass partials to `gulp.src`
   return gulp.src([
     'app/styles/*.scss',
@@ -88,7 +97,7 @@ gulp.task('styles', function () {
 });
 
 // Scan Your HTML For Assets & Optimize Them
-gulp.task('html', function () {
+gulp.task('html', function() {
   var assets = $.useref.assets({searchPath: '{.tmp,app}'});
 
   return gulp.src('app/**/*.html')
@@ -112,12 +121,12 @@ gulp.task('html', function () {
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 // Build Production Files, the Default Task
-gulp.task('build', ['clean'], function (cb) {
+gulp.task('build', ['clean'], function(cb) {
   runSequence('styles', ['jshint', 'html', 'images', 'copy'], cb);
 });
 
 // Build and serve the output from the dist build
-gulp.task('serve:dist', ['default'], function () {
+gulp.task('serve:dist', ['default'], function() {
   browserSync({
     notify: false,
     logPrefix: 'WSK',
@@ -130,7 +139,7 @@ gulp.task('serve:dist', ['default'], function () {
 });
 
 // Watch Files For Changes & Reload
-gulp.task('serve', ['clean', 'styles'], function () {
+gulp.task('serve', ['clean', 'styles', 'copy:dependencies'], function() {
   browserSync({
     notify: false,
     // Customize the BrowserSync console logging prefix
